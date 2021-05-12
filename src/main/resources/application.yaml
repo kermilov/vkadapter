@@ -1,0 +1,40 @@
+application:
+    userId: ${VK_USER_ID:0}
+    accessToken: ${VK_USER_TOKEN:token}
+
+spring:
+    # Postgres
+    datasource:
+        #    driverClassName: org.postgresql.Driver
+        driverClassName: ${DB_DRIVERCLASSNAME:com.p6spy.engine.spy.P6SpyDriver}
+        url: ${DB_URL:jdbc:p6spy:postgresql://localhost:5432/db}
+        username: ${DB_USERNAME:postgres}
+        password: ${DB_PASSWORD:postgres}
+        hikari:
+            connection-test-query:
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+        show-sql: true
+        generate-ddl: false
+        hibernate:
+            ddl-auto: none
+            naming:
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        properties:
+            hibernate:
+                globally_quoted_identifiers: true # Для PostgreSQL установить в true, для MSSQL, Oracle в false
+                jdbc:
+                    time_zone: UTC
+                    lob:
+                        non_contextual_creation: true
+    kafka:
+        bootstrap-servers: ${KAFKA_URL:localhost:9092}
+        producer:
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    cloud:
+        stream:
+            function:
+                definition: InMemorySwaggerResourcesProviderStub
+            bindings:
+                targetAudienceTopicPublish:
+                    destination: ${TARGET_AUDIENCE_TOPIC_PUBLISH:targetAudienceTopicPublish}
