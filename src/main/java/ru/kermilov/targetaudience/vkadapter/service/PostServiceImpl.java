@@ -87,6 +87,11 @@ public class PostServiceImpl implements PostService {
         return result;
     }
 
+    @Override
+    public List<PostEntity> findAll() {
+        return refresh((List<PostEntity>) repository.findAll());
+    }
+
     private List<PostEntity> refreshStatus(List<PostEntity> list) {
         try {
             var posts = list.stream()
@@ -115,8 +120,7 @@ public class PostServiceImpl implements PostService {
                 .filter(f ->
                     // если в ВК поста нет
                     wallResponse.stream()
-                        .filter(r -> f.getVKApiClientId().equalsIgnoreCase(r.getOwnerId()+"_"+r.getId()))
-                        .count() == 0)
+                        .noneMatch(r -> f.getVKApiClientId().equalsIgnoreCase(r.getOwnerId() + "_" + r.getId())))
                 .collect(Collectors.toList())
                 // синхроним это с нашей базой
                 .forEach(p -> p.setStatus(PostStatus.REJECT));

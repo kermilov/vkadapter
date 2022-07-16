@@ -1,7 +1,10 @@
 package ru.kermilov.targetaudience.vkadapter.controller;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +29,14 @@ public class QuickInsertController {
     @PostMapping("/quickinsert/group")
     public ResponseEntity<GroupEntity> quickInsertGroup(@RequestParam(name = "url") String url) {
         return ResponseEntity.of(Optional.of(groupService.quickInsert(url)));
+    }
+
+    @PostMapping("/quickinsert/groups")
+    public ResponseEntity<List<GroupEntity>> quickInsertGroups(@RequestParam(name = "urls") String urls) {
+        return ResponseEntity.of(Optional.of(Arrays.stream(urls.split(" "))
+            .map(groupService::quickInsert)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList())));
     }
 
     @PostMapping("/quickinsert/posttemplate")
