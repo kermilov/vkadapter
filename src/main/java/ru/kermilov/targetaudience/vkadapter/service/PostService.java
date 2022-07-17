@@ -9,6 +9,7 @@ import ru.kermilov.targetaudience.vkadapter.domain.PostTemplateEntity;
 public interface PostService {
     PostEntity quickInsert(PostTemplateEntity postTemplateEntity, GroupEntity groupEntity);
     PostEntity quickInsert(String url);
-    List<PostEntity> refresh(List<PostEntity> list);
+    List<PostEntity> refresh();
+    void rollback();
     List<PostEntity> findAll();
 }

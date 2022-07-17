@@ -1,0 +1,73 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="kermilov" id="vk_grouptemplate">
+        <createTable tableName="vk_grouptemplate">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vk_grouptemplate_pkey"/>
+            </column>
+            <column name="groupid" type="BIGINT"/>
+            <column name="type" type="INT"/>
+            <column name="attachment" type="VARCHAR(255)"/>
+            <column name="comment" type="VARCHAR(255)"/>
+            <column name="message" type="TEXT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_grouptemplate_fkey">
+        <addForeignKeyConstraint baseColumnNames="groupid" baseTableName="vk_grouptemplate" constraintName="vk_grouptemplate_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vk_group"/>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_company">
+        <createTable tableName="vk_company">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vk_company_pkey"/>
+            </column>
+            <column name="type" type="INT"/>
+            <column name="comment" type="VARCHAR(255)"/>
+            <column name="posttemplateid" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_company_fkey">
+        <addForeignKeyConstraint baseColumnNames="posttemplateid" baseTableName="vk_company" constraintName="vk_company_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vk_posttemplate"/>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_company_groups">
+        <createTable tableName="vk_company_groups">
+            <column name="companyid" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vk_company_groups_pkey"/>
+            </column>
+            <column name="groupid" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vk_company_groups_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_company_groups_fkeys">
+        <addForeignKeyConstraint baseColumnNames="companyid" baseTableName="vk_company_groups" constraintName="vk_company_groups_fkey1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vk_company"/>
+        <addForeignKeyConstraint baseColumnNames="groupid" baseTableName="vk_company_groups" constraintName="vk_company_groups_fkey2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vk_group"/>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_company_grouptemplates">
+        <createTable tableName="vk_company_grouptemplates">
+            <column name="companyid" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vk_company_grouptemplates_pkey"/>
+            </column>
+            <column name="grouptemplateid" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vk_company_grouptemplates_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_company_grouptemplates_fkeys">
+        <addForeignKeyConstraint baseColumnNames="companyid" baseTableName="vk_company_grouptemplates" constraintName="vk_company_grouptemplates_fkey1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vk_company"/>
+        <addForeignKeyConstraint baseColumnNames="grouptemplateid" baseTableName="vk_company_grouptemplates" constraintName="vk_company_grouptemplates_fkey2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vk_grouptemplate"/>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_company_posts">
+        <createTable tableName="vk_company_posts">
+            <column name="companyid" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vk_company_posts_pkey"/>
+            </column>
+            <column name="postid" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vk_company_posts_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="kermilov" id="vk_company_posts_fkeys">
+        <addForeignKeyConstraint baseColumnNames="companyid" baseTableName="vk_company_posts" constraintName="vk_company_posts_fkey1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vk_company"/>
+        <addForeignKeyConstraint baseColumnNames="postid" baseTableName="vk_company_posts" constraintName="vk_company_posts_fkey2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vk_post"/>
+    </changeSet>
+</databaseChangeLog>

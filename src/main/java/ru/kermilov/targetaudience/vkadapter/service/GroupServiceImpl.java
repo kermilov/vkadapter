@@ -7,11 +7,13 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.groups.Fields;
 
+import com.vk.api.sdk.objects.groups.responses.GetByIdLegacyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import ru.kermilov.targetaudience.vkadapter.domain.GroupEntity;
+import ru.kermilov.targetaudience.vkadapter.exception.GroupServiceException;
 import ru.kermilov.targetaudience.vkadapter.repository.GroupRepository;
 import ru.kermilov.targetaudience.vkadapter.wrapper.VkApiClientWrapper;
 
@@ -19,6 +21,7 @@ import ru.kermilov.targetaudience.vkadapter.wrapper.VkApiClientWrapper;
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService {
 
+    private static final String URL_PREFIX = "https://vk.com/public";
     @Autowired
     private final VkApiClientWrapper vkApiClientWrapper;
     @Autowired
@@ -28,45 +31,58 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupEntity quickInsert(String url) {
-        GroupEntity result = null;
-        var lastIndexOf = url.lastIndexOf("/")+1;
-        var id = url.substring(lastIndexOf);
         try {
-            var response = vkApiClientWrapper.vkApiClient().groups().getByIdLegacy(actor)
-                .groupId(id)
-                .fields(Fields.MEMBERS_COUNT)
-                .execute().get(0);
-            var entity = new GroupEntity(
-                response.getId(),
-                response.getMembersCount(),
-                response.getName(),
-                url.substring(0, lastIndexOf) +"public"+response.getId());
-            result = repository.save(entity);
-        } catch (ApiException|ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            var lastIndexOf = url.lastIndexOf("/")+1;
+            var id = url.substring(lastIndexOf);
+            return getGroupEntity(id);
+        } catch (GroupServiceException e) {
+            return GroupEntity.builder()
+                .url(url)
+                .comment(e.getMessage())
+                .build();
         }
-        return result;
     }
+
     @Override
     public GroupEntity quickInsert(Integer externalId) {
-        GroupEntity result = null;
         try {
-            var response = vkApiClientWrapper.vkApiClient().groups()
-                .getByIdLegacy(actor)
-                .groupId(externalId.toString())
-                .fields(Fields.MEMBERS_COUNT)
-                .execute().get(0);
+            var id = externalId.toString();
+            return getGroupEntity(id);
+        } catch (GroupServiceException e) {
+            return GroupEntity.builder()
+                .externalId(externalId)
+                .comment(e.getMessage())
+                .build();
+        }
+    }
+
+    private GroupEntity getGroupEntity(String id) throws GroupServiceException {
+        try {
+            GetByIdLegacyResponse response = vkApiClientWrapper.vkApiClient().groups()
+                    .getByIdLegacy(actor)
+                    .groupId(id)
+                    .fields(Fields.MEMBERS_COUNT,Fields.CAN_SUGGEST)
+                    .execute().get(0);
+            if (!response.canSuggest()) {
+                throw new GroupServiceException("Can't suggest");
+            }
             var entity = new GroupEntity(
                 response.getId(),
                 response.getMembersCount(),
                 response.getName(),
-                "https://vk.com/public"+response.getId());
-            result = repository.save(entity);
+                URL_PREFIX +response.getId());
+            repository.findByExternalId(response.getId())
+                .map(GroupEntity::getId)
+                .ifPresent(entity::setId);
+            return repository.save(entity);
         } catch (ApiException|ClientException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
-        return result;
+    }
+
+    @Override
+    public List<GroupEntity> findAll() {
+        return (List<GroupEntity>) repository.findAll();
     }
 }

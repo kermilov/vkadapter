@@ -7,11 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 @Entity
 @Getter
@@ -19,6 +16,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "vk_group")
 public class GroupEntity {
     public GroupEntity(Integer externalId, Integer membersCount, String name, String url) {
@@ -31,6 +29,7 @@ public class GroupEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+    @NaturalId
     @Column(name = "externalid")
     private Integer externalId;
     @Column(name = "memberscount")

@@ -1,6 +1,6 @@
 package ru.kermilov.targetaudience.vkadapter.service;
 
-import java.util.List;
+import java.util.Optional;
 
 import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
@@ -31,6 +31,10 @@ public class PostTemplateServiceImpl implements PostTemplateService {
         PostTemplateEntity result = null;
         var lastIndexOf = url.lastIndexOf("wall")+4;
         var id = url.substring(lastIndexOf);
+        Optional<PostTemplateEntity> exist = repository.findByExternalId(id);
+        if (exist.isPresent()) {
+            return exist.get();
+        }
         try {
             var response = vkApiClientWrapper.vkApiClient().wall()
                 .getByIdLegacy(actor, id)

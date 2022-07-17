@@ -8,9 +8,6 @@ import java.util.Objects;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.vk.api.sdk.objects.base.City;
-import com.vk.api.sdk.objects.friends.responses.SearchResponse;
-import com.vk.api.sdk.objects.likes.responses.GetListResponse;
-import com.vk.api.sdk.objects.users.responses.GetResponse;
 
 import org.apache.commons.io.IOUtils;
 
@@ -30,6 +27,7 @@ public class TestConstants {
     static final String VKMUSICIANS_POST_URL = "https://vk.com/wall-50695130_68913";
     static final String VKMUSICIANS_POST_DESC = "[club149151284|Помехи] — «Камнем На Шее» (2017) \n\n#rock@vkmusicians\n#post@vkmusicians \n#indie@vkmusicians";
 	static final String VKMUSICIANS_POST_ATTACH = "audio_playlist-149151284_1";
+    static final String VKMUSICIANS_POST_HASH = "495b7adf-6879-3848-8818-ec57685a297e";
 
     static final Integer E_MUSIC_YAR_ID = 42514821;
 	static final String E_MUSIC_YAR_SCREEN_NAME = "e_music_yar";
@@ -60,10 +58,12 @@ public class TestConstants {
     }
 
     static PostEntity getPostEntityVkMusicians() {
-        return new PostEntity(getGroupEntityVkMusicians(),
+        PostEntity postEntity = new PostEntity(getGroupEntityVkMusicians(),
             VKMUSICIANS_POST_DESC,
             VKMUSICIANS_POST_ATTACH,
             VKMUSICIANS_POST_ID);
+        postEntity.setHash(VKMUSICIANS_POST_HASH);
+        return postEntity;
     }
 
     static GroupEntity getGroupEntityEMusicYar() {

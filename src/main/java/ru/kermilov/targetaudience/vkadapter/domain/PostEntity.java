@@ -12,13 +12,12 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.*;
+import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -56,6 +55,15 @@ public class PostEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @SneakyThrows
+    public void calcHash() {
+        String s = "G" + this.groupEntity.getId() + "M" + this.getMessage() + "A" + this.getAttachment();
+        setHash(UUID.nameUUIDFromBytes(s.getBytes(StandardCharsets.UTF_8)).toString());
+    }
+
+    @Column(name = "hash")
+    private String hash;
     @ManyToOne
     @JoinColumn(name = "groupid")
     private GroupEntity groupEntity;
@@ -69,6 +77,7 @@ public class PostEntity {
     private String attachment;
     @Column(name = "comment")
     private String comment;
+    @NaturalId
     @Column(name = "externalid")
     private Integer externalId;
     @Column(name = "url")

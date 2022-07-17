@@ -1,14 +1,10 @@
 package ru.kermilov.targetaudience.vkadapter.domain;
 
-import javax.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -16,19 +12,20 @@ import org.hibernate.annotations.Type;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "vk_posttemplate")
-public class PostTemplateEntity {
-    public PostTemplateEntity(String message, String attachment) {
-        this.message = message;
-        this.attachment = attachment;
-    }
+@Table(name = "vk_grouptemplate")
+public class GroupTemplateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     @NaturalId
-    @Column(name = "externalid")
-    private String externalId;
+    @ManyToOne
+    @JoinColumn(name = "groupid")
+    private GroupEntity groupEntity;
+    @NaturalId
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "type")
+    private ContentType type;
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     @Column(name = "message")
